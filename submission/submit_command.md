@@ -1,1 +1,0 @@
-kaggle competitions submit -c m5-forecasting-accuracy -f submission/sub_case1_20200328131459_valid_2.1368840143605374.csv -m "test"

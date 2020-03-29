@@ -19,8 +19,12 @@ class Lgb_Model(Base_Model):
                         )
         
     def convert_dataset(self, x_train, y_train, x_val, y_val):
-        train_set = lgb.Dataset(x_train, y_train, categorical_feature=self.categoricals)
-        val_set = lgb.Dataset(x_val, y_val, categorical_feature=self.categoricals)
+        if self.categoricals is not None:
+            train_set = lgb.Dataset(x_train, y_train, categorical_feature=self.categoricals)
+            val_set = lgb.Dataset(x_val, y_val, categorical_feature=self.categoricals)
+        else:
+            train_set = lgb.Dataset(x_train, y_train)
+            val_set = lgb.Dataset(x_val, y_val)
         return train_set, val_set
         
     def get_params(self):
@@ -46,11 +50,13 @@ class Lgb_Model(Base_Model):
         'metric': 'rmse',
         'objective': 'regression',
         'n_jobs': -1,
-        'seed': 236,
+        'seed': SEED,
         'learning_rate': 0.1,
         'bagging_fraction': 0.75,
         'bagging_freq': 10, 
-        'colsample_bytree': 0.75
+        'colsample_bytree': 0.75,
+        'num_boost_round' : 2500, 
+        'early_stopping_rounds' : 50
     }
         
         return params

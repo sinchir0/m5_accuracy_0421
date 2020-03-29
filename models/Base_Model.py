@@ -60,18 +60,18 @@ class Base_Model(object):
     def convert_x(self, x):
         return x
     
-    def output_train_test_df(self,train_df,test_df,valid_df = None):
-        train_df.to_csv(f'{MODEL_PASS}/{CASE}/train_{CASE}_{NOW:%Y%m%d%H%M%S}.csv',
-            index=False
+    def output_use_df(self,train_df,test_df,valid_df = None):
+        train_df.to_pickle(f'{MODEL_PASS}/{CASE}/train_{CASE}_{NOW:%Y%m%d%H%M%S}.pkl'
+        #    index=False
         )
         
-        if valid_df:
-            valid_df.to_csv(f'{MODEL_PASS}/{CASE}/valid_{CASE}_{NOW:%Y%m%d%H%M%S}.csv',
-                            index=False
+        if valid_df is not None:
+            valid_df.to_pickle(f'{MODEL_PASS}/{CASE}/valid_{CASE}_{NOW:%Y%m%d%H%M%S}.pkl'
+                           # index=False
                            )
 
-        test_df.to_csv(f'{MODEL_PASS}/{CASE}/test_{CASE}_{NOW:%Y%m%d%H%M%S}.csv',
-            index=False
+        test_df.to_pickle(f'{MODEL_PASS}/{CASE}/test_{CASE}_{NOW:%Y%m%d%H%M%S}.pkl'
+        #    index=False
         )
     
     def calc_shap(self, x_train, model, shap_sampling = 10000):
@@ -89,8 +89,8 @@ class Base_Model(object):
         y_pred = np.zeros((len(self.test_df), ))
         models = []
         
-        if OUTPUT_TRAIN_TEST_DF:
-            self.output_train_test_df(self.train_df,self.test_df)
+        if OUTPUT_USE_DF:
+            self.output_use_df(self.train_df,self.test_df)
         
         logging.debug(f"params:{self.params}")
         
@@ -141,9 +141,11 @@ class Base_Model(object):
                 feature_importances = pd.merge(feature_importances,fold_importance,on='feature')
                 
             #SHAP値の計算 本当は画像をjpgで保存したい
-            if OUTPUT_TRAIN_TEST_DF:
+            if CALC_SHAP:
+                print("Start CALC_SHAP")
                 explainer, shap_values = self.calc_shap(x_train, model, 10000)
                 shap.summary_plot(shap_values[1], x_train)
+                print("Finish")
  
         score = roc_auc_score(self.train_df[self.target], oof_pred)
     
@@ -174,20 +176,37 @@ class Base_Model(object):
         print(f"Start {VALIDATION}")
         logging.debug(f"Start {VALIDATION}")
         
-        print("start auto_label_encoder")
+        print("Start auto_label_encoder")
+        
+        # auto_label_encoderで自動的にラベルエンコーディングしないで欲しいcolumnはここに追加
+        exclude_columns = [
+            'id',
+            'date'
+        ]
 
-        self.train_df, self.valid_df, self.test_df = auto_label_encoder(self.train_df, self.valid_df, self.test_df)
+        self.train_df, self.valid_df, self.test_df = auto_label_encoder(
+            self.train_df,
+            self.valid_df, 
+            self.test_df,
+            exclude_columns
+        )
 
-        print("finish")
-
+        print("Finish")
+        
+        if OUTPUT_USE_DF:
+            print("Start OUTPUT_USE_DF")
+            self.output_use_df(
+                train_df = self.train_df,
+                test_df = self.test_df,
+                valid_df = self.valid_df
+            )
+            print("Finish")
+        
         train_pred = np.zeros((len(self.train_df), ))
         valid_pred = np.zeros((len(self.valid_df), ))
         #oof_pred = np.zeros((len(self.train_df), ))
         y_pred = np.zeros((len(self.test_df), ))
         models = []
-        
-        if OUTPUT_TRAIN_TEST_DF:
-            self.output_train_test_df(self.train_df,self.test_df)
         
         logging.debug(f"params:{self.params}")
         
@@ -223,13 +242,16 @@ class Base_Model(object):
         #models.append(model)
 
         #SHAP値の計算 本当は画像をjpgで保存したい
-        if OUTPUT_TRAIN_TEST_DF:
+        if CALC_SHAP:
+            print("Start CALC SHAP")
             explainer, shap_values = self.calc_shap(x_train, model, 10000)
             shap.summary_plot(shap_values[1], x_train)
+            print("finish")
         
         #log
         score_log = f'RMSSE score train : {train_score}, valid : {valid_score}'
         make_log(MAKE_PATH, PATH_W, score_log)
+        print(score_log)
         logging.debug(score_log)
         
         #特徴量重要度の計算

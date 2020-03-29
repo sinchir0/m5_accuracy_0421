@@ -15,6 +15,10 @@ SUB_PASS = f"{ROOT_PATH}/submission"
 MAKE_PATH = f"{MODEL_PASS}/{CASE}"
 PATH_W = f"{MODEL_PASS}/{CASE}/{CASE}_lgb_score.txt"
 
+# SEED
+SEED = 2020
+#SEED = 71
+
 # USE FEATURE
 FEATURE = [
     '001_lag_t28',
@@ -28,9 +32,9 @@ FEATURE = [
     '002_rolling_std_t30',
     '002_rolling_skew_t30',
     '002_rolling_kurt_t30',
-    '003_lag_price_t1',
+    #'003_lag_price_t1',
     '003_price_change_t1',
-    '003_rolling_price_max_t365',
+    #'003_rolling_price_max_t365',
     '003_price_change_t365',
     '003_rolling_price_std_t7',
     '003_rolling_price_std_t30',
@@ -86,8 +90,8 @@ LOSS = "multi_logloss"
 ID_NAME = "PassengerId"
 
 # モデルを回す直前のtrainとtestをアウトプットする
-#OUTPUT_TRAIN_TEST_DF = True
-OUTPUT_TRAIN_TEST_DF = False
+OUTPUT_USE_DF = True
+#OUTPUT_USE_DF = False
 
 # SHAP値を計算する
 #CALC_SHAP = True

@@ -7,6 +7,9 @@ import pickle
 from configs.local_parameter import *
 import gc
 
+# auto_label_encoder
+import category_encoders as ce
+
 def load_datasets(feats):
     #dfs = [pd.read_feather(f'features/{f}_train.feather') for f in feats]
     dfs = [pd.read_pickle(f'{ROOT_PATH}/features/{f}_train.pkl') for f in feats]
@@ -68,7 +71,8 @@ def load_datasets_and_target(feats,target_name):
     
     return train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid
 
-def seed_everything(seed=71):
+#def seed_everything(seed=71):
+def seed_everything(seed=SEED):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -108,11 +112,13 @@ def reduce_mem_usage(df, verbose=True):
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
     return df
 
-import category_encoders as ce
-
-def auto_label_encoder(train,valid,test):    
-    # Labelencを行うリストを取得
+def auto_label_encoder(train,valid,test,exclude_columns):    
+    # Labelencを行うリストとして、dtype=objectを取得
     obj_list = train.select_dtypes("O").columns.tolist() 
+    
+    # ラベルエンコーディングしたくない列を除外する
+    for f in exclude_columns:
+        obj_list.remove(f)
     
     # 区分のためにtypeを記載
     train["type"] = "train"
@@ -132,8 +138,8 @@ def auto_label_encoder(train,valid,test):
         all_data_after_le[feature] = all_data_after_le_only_obj_col[feature] - 1
     
     # trainとtestに分割
-    train_after = all_data_after_le[all_data_after_le["type"] == "train"]
-    valid_after = all_data_after_le[all_data_after_le["type"] == "valid"]
-    test_after = all_data_after_le[all_data_after_le["type"] == "test"]
+    train_after = all_data_after_le[all_data_after_le["type"] == "train"].drop('type', axis = 1)
+    valid_after = all_data_after_le[all_data_after_le["type"] == "valid"].drop('type', axis = 1)
+    test_after = all_data_after_le[all_data_after_le["type"] == "test"].drop('type', axis = 1)
 
     return train_after, valid_after, test_after

@@ -8,13 +8,13 @@ from models.Base_Model import *
 from models.lgbm import *
 
 from configs.local_parameter import *
-from utils.util_code import *
+from utils import *
 
 seed_everything()
 
-print("start load_datasets_and_target")
+print("Start load_datasets_and_target")
 train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid = load_datasets_and_target(FEATURE,TARGET)
-print("finish")
+print("Finish")
 
 
 #loggngの設定
@@ -37,17 +37,17 @@ print(train_df)
 print(valid_df)
 print(test_df)
 
-print("start lgb_model")
+print("Start lgb_model")
 lgb_model = Lgb_Model(train_df = train_df, 
                       test_df = test_df,
                       valid_df = valid_df
                       #n_splits = FOLD, 
                       #categoricals=categoricals
                      )
-print("finish")
+print("Finish")
 
 # submitファイルの作成
-print("start make submission")
+print("Start make submission")
 
 def transform_predict(test, submission):
     test["demand"] = lgb_model.y_pred
@@ -73,4 +73,6 @@ final.to_csv(f'./submission/sub_{CASE}_{NOW:%Y%m%d%H%M%S}_{lgb_model.score}.csv'
    index=False
 )
 
-print("finish all! I kept you waiting !")
+print(f"Finish {CASE}! I kept you waiting !")
+print("Quick submit command")
+print(f"python submit_m5_acc.py sub_{CASE}_{NOW:%Y%m%d%H%M%S}_{lgb_model.score}.csv comment")
