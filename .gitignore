@@ -1,0 +1,11 @@
+data/*/*.csv
+data/*/*.tsv
+data/*/*.zip
+data/*/*.pkl
+features/*.feather
+features/*.pkl
+
+model_output/*/*
+logs/*/*
+
+submission/*/*
