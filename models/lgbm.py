@@ -19,7 +19,7 @@ class Lgb_Model(Base_Model):
                         )
         
     def convert_dataset(self, x_train, y_train, x_val, y_val):
-        if self.categoricals is not None:
+        if self.categoricals != []:
             train_set = lgb.Dataset(x_train, y_train, categorical_feature=self.categoricals)
             val_set = lgb.Dataset(x_val, y_val, categorical_feature=self.categoricals)
         else:

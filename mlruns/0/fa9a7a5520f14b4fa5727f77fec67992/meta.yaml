@@ -1,0 +1,15 @@
+artifact_uri: file:///home/jupyter/m5_accuracy/kaggle-pipeline2/mlruns/0/fa9a7a5520f14b4fa5727f77fec67992/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: fa9a7a5520f14b4fa5727f77fec67992
+run_uuid: fa9a7a5520f14b4fa5727f77fec67992
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1585527120404
+status: 1
+tags: []
+user_id: jupyter

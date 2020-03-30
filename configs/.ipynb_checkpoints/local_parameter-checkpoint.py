@@ -90,8 +90,12 @@ LOSS = "multi_logloss"
 ID_NAME = "PassengerId"
 
 # モデルを回す直前のtrainとtestをアウトプットする
-OUTPUT_USE_DF = True
-#OUTPUT_USE_DF = False
+#OUTPUT_USE_DF = True
+OUTPUT_USE_DF = False
+
+# InfをNaNに変換するかどうか
+INF_TO_NAN = True
+#INF_TO_NAN = False
 
 # SHAP値を計算する
 #CALC_SHAP = True

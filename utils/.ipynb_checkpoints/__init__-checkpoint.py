@@ -7,6 +7,9 @@ import pickle
 from configs.local_parameter import *
 import gc
 
+# auto_label_encoder
+import category_encoders as ce
+
 def load_datasets(feats):
     #dfs = [pd.read_feather(f'features/{f}_train.feather') for f in feats]
     dfs = [pd.read_pickle(f'{ROOT_PATH}/features/{f}_train.pkl') for f in feats]
@@ -39,7 +42,12 @@ def load_datasets_and_target(feats,target_name):
     #　ベースデータと特徴量の結合
     data = pd.concat([data_not_concat,features_concat], axis=1, sort=False)
     
+    # メモリの節約
     data = reduce_mem_usage(data)
+    
+    # InfをNaNに変換
+    if INF_TO_NAN:
+        data = inf_to_nan(data)
     
     # train,testへの分割
     train_df = data[data['date'] <= '2016-03-27']
@@ -53,14 +61,8 @@ def load_datasets_and_target(feats,target_name):
     test_df = data[(data['date'] > '2016-04-24')]
     
     if OPE_CHECK:
-        train_df = train_df[1:1000]
-        X_train = X_train[1:1000]
-        y_train = y_train[1:1000]
-        
-        valid_df = valid_df[1:1000]
-        X_valid = X_valid[1:1000]
-        y_valid = y_valid[1:1000]
-        
+        train_df = train_df[1:1000], X_train = X_train[1:1000], y_train = y_train[1:1000]
+        valid_df = valid_df[1:1000], X_valid = X_valid[1:1000], y_valid = y_valid[1:1000]
         #test_df = test_df[1:1000]
     
     del data
@@ -69,7 +71,7 @@ def load_datasets_and_target(feats,target_name):
     return train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid
 
 #def seed_everything(seed=71):
-def seed_everything(seed=2020):
+def seed_everything(seed=SEED):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -109,8 +111,6 @@ def reduce_mem_usage(df, verbose=True):
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
     return df
 
-import category_encoders as ce
-
 def auto_label_encoder(train,valid,test,exclude_columns):    
     # Labelencを行うリストとして、dtype=objectを取得
     obj_list = train.select_dtypes("O").columns.tolist() 
@@ -142,3 +142,6 @@ def auto_label_encoder(train,valid,test,exclude_columns):
     test_after = all_data_after_le[all_data_after_le["type"] == "test"].drop('type', axis = 1)
 
     return train_after, valid_after, test_after
+
+def inf_to_nan(df):
+    return df.replace([np.inf, -np.inf], np.nan)

@@ -7,7 +7,9 @@ import gc
 import sys
 sys.path.append('..')
 from configs.local_parameter import *
-from utils.reduce_mem_usage import *
+from utils import *
+
+MAKE_DATA_ALL = True
 
 def read_data():
     print('Reading files...')
@@ -64,8 +66,9 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nr
     
     del sales_train_validation, test1, test2
     
-    # get only a sample for fst training
-    data = data.loc[nrows:]
+    if not MAKE_DATA_ALL:
+        # get only a sample for fst training
+        data = data.loc[nrows:]
     
     # drop some calendar features
     calendar.drop(['weekday', 'wday', 'month', 'year'], inplace = True, axis = 1)
@@ -90,4 +93,7 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nr
 calendar, sell_prices, sales_train_validation, submission = read_data()
 data = melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nrows = 27500000, merge = True)
 
-data.to_pickle(f"{DATA_PATH}/data.pkl")
+if not MAKE_DATA_ALL:
+    data.to_pickle(f"{DATA_PATH}/data.pkl")
+else:
+    data.to_pickle(f"{DATA_PATH}/data_all.pkl")
