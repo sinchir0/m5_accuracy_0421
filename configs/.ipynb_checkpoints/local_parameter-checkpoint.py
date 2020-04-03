@@ -6,7 +6,7 @@ CASE = "case1"
 OPE_CHECK =False
 
 # PATH
-ROOT_PATH = "/home/jupyter/m5_accuracy/kaggle-pipeline2"
+ROOT_PATH = "/home/jupyter/kaggle_pipeline_m5_accuracy"
 DATA_PATH = f"{ROOT_PATH}/data/input"
 FEATURES_PATH = f"{ROOT_PATH}/features"
 MODEL_PASS = f"{ROOT_PATH}/model_output"
@@ -14,6 +14,10 @@ SUB_PASS = f"{ROOT_PATH}/submission"
 
 MAKE_PATH = f"{MODEL_PASS}/{CASE}"
 PATH_W = f"{MODEL_PASS}/{CASE}/{CASE}_lgb_score.txt"
+
+# USE_ALL_DATA Including PrivateLBData 
+# USE_ALL_DATA = True
+USE_ALL_DATA = False
 
 # SEED
 SEED = 2020
@@ -89,13 +93,27 @@ METRIC = "auc"
 LOSS = "multi_logloss"
 ID_NAME = "PassengerId"
 
+# label_encoderでラベルエンコーディングしないで欲しいcolumnはここに追加
+EXCLUDE_COLUMNS = [
+    'id',
+    'date'
+]
+
+# data_allを生成時にlabel encodeも実施
+AUTO_LABEL_ENCODER_IN_LOAD_DATASETS_AND_TARGET = True
+#AUTO_LABEL_ENCODER_IN_LOAD_DATASETS_AND_TARGET = False
+
+# fit時にとにかくlabel encodeを行う
+#AUTO_LABEL_ENCODER = True
+AUTO_LABEL_ENCODER = False
+
 # モデルを回す直前のtrainとtestをアウトプットする
 #OUTPUT_USE_DF = True
 OUTPUT_USE_DF = False
 
 # InfをNaNに変換するかどうか
-INF_TO_NAN = True
-#INF_TO_NAN = False
+#INF_TO_NAN = True
+INF_TO_NAN = False
 
 # SHAP値を計算する
 #CALC_SHAP = True

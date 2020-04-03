@@ -37,13 +37,22 @@ def load_datasets_and_target(feats,target_name):
     features_concat = pd.concat(features, axis=1, sort=False)
     
     # ベースデータの読み込み
-    data_not_concat = pd.read_pickle(f"{DATA_PATH}/data.pkl")
+    if USE_ALL_DATA:
+        data_not_concat = pd.read_pickle(f"{DATA_PATH}/data_all.pkl")
+    else:
+        data_not_concat = pd.read_pickle(f"{DATA_PATH}/data.pkl")
     
     #　ベースデータと特徴量の結合
     data = pd.concat([data_not_concat,features_concat], axis=1, sort=False)
     
     # メモリの節約
     data = reduce_mem_usage(data)
+    
+    del data_not_concat,features_concat
+    gc.collect()
+    
+    if AUTO_LABEL_ENCODER_IN_LOAD_DATASETS_AND_TARGET:
+        data = label_encoder(data)
     
     # InfをNaNに変換
     if INF_TO_NAN:
@@ -111,12 +120,30 @@ def reduce_mem_usage(df, verbose=True):
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
     return df
 
-def auto_label_encoder(train,valid,test,exclude_columns):    
+def label_encoder(all_data):    
+    # Labelencを行うリストとして、dtype=objectを取得
+    obj_list = all_data.select_dtypes("O").columns.tolist() 
+    
+    # ラベルエンコーディングしたくない列を除外する
+    for f in EXCLUDE_COLUMNS:
+        obj_list.remove(f)
+
+    # 文字を序数に変換
+    ce_oe = ce.OrdinalEncoder(cols=obj_list)
+    all_data_after_le_only_obj_col = ce_oe.fit_transform(all_data)
+    
+    # 公式の推奨である０始まりに一応する
+    for feature in obj_list:
+        all_data[feature] = all_data_after_le_only_obj_col[feature] - 1
+
+    return all_data
+
+def auto_label_encoder(train,valid,test):    
     # Labelencを行うリストとして、dtype=objectを取得
     obj_list = train.select_dtypes("O").columns.tolist() 
     
     # ラベルエンコーディングしたくない列を除外する
-    for f in exclude_columns:
+    for f in EXCLUDE_COLUMNS:
         obj_list.remove(f)
     
     # 区分のためにtypeを記載

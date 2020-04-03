@@ -176,20 +176,15 @@ class Base_Model(object):
         print(f"Start {VALIDATION}")
         logging.debug(f"Start {VALIDATION}")
         
-        print("Start auto_label_encoder")
+        if AUTO_LABEL_ENCODER:
+            print("Start auto_label_encoder")
         
-        # auto_label_encoderで自動的にラベルエンコーディングしないで欲しいcolumnはここに追加
-        exclude_columns = [
-            'id',
-            'date'
-        ]
-
-        self.train_df, self.valid_df, self.test_df = auto_label_encoder(
-            self.train_df,
-            self.valid_df, 
-            self.test_df,
-            exclude_columns
-        )
+            self.train_df, self.valid_df, self.test_df = auto_label_encoder(
+                self.train_df,
+                self.valid_df, 
+                self.test_df,
+                exclude_columns
+            )
 
         print("Finish")
         

@@ -5,11 +5,9 @@ import os
 import gc
         
 import sys
-sys.path.append('..')
+sys.path.append('.')
 from configs.local_parameter import *
 from utils import *
-
-MAKE_DATA_ALL = True
 
 def read_data():
     print('Reading files...')
@@ -66,15 +64,17 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nr
     
     del sales_train_validation, test1, test2
     
-    if not MAKE_DATA_ALL:
+    if not USE_ALL_DATA:
         # get only a sample for fst training
         data = data.loc[nrows:]
     
     # drop some calendar features
+    # 「feature_create_m5.py」にて同じものを作り直す
     calendar.drop(['weekday', 'wday', 'month', 'year'], inplace = True, axis = 1)
     
     # delete test2 for now
-    data = data[data['part'] != 'test2']
+    if not USE_ALL_DATA:
+        data = data[data['part'] != 'test2']
     
     if merge:
         # notebook crash with the entire dataset (maybee use tensorflow, dask, pyspark xD)
@@ -93,7 +93,7 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nr
 calendar, sell_prices, sales_train_validation, submission = read_data()
 data = melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nrows = 27500000, merge = True)
 
-if not MAKE_DATA_ALL:
-    data.to_pickle(f"{DATA_PATH}/data.pkl")
+if USE_ALL_DATA:
+    data.to_pickle(f"{DATA_PATH}/data_all.pkl") 
 else:
-    data.to_pickle(f"{DATA_PATH}/data_all.pkl")
+    data.to_pickle(f"{DATA_PATH}/data.pkl")

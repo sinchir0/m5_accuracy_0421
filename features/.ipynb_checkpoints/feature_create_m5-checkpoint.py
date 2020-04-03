@@ -7,7 +7,7 @@ import gc
 import os
         
 import sys
-sys.path.append('..')
+sys.path.append('.')
 from configs.local_parameter import *
 
 # # 欠損値を埋める、LabelEncoder実施
@@ -25,8 +25,10 @@ from configs.local_parameter import *
 #     return data
 
 # data = transform(data)
-
-data = pd.read_pickle(f"{DATA_PATH}/data.pkl")
+if USE_ALL_DATA:
+    data = pd.read_pickle(f"{DATA_PATH}/data_all.pkl")
+else:
+    data = pd.read_pickle(f"{DATA_PATH}/data.pkl")
 
 def simple_fe(data):
     
