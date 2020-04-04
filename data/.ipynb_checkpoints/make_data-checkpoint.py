@@ -93,7 +93,7 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nr
 calendar, sell_prices, sales_train_validation, submission = read_data()
 data = melt_and_merge(calendar, sell_prices, sales_train_validation, submission, nrows = 27500000, merge = True)
 
-if not USE_ALL_DATA:
-    data.to_pickle(f"{DATA_PATH}/data.pkl")
+if USE_ALL_DATA:
+    data.to_pickle(f"{DATA_PATH}/data_all.pkl") 
 else:
-    data.to_pickle(f"{DATA_PATH}/data_all.pkl")
+    data.to_pickle(f"{DATA_PATH}/data.pkl")

@@ -176,20 +176,15 @@ class Base_Model(object):
         print(f"Start {VALIDATION}")
         logging.debug(f"Start {VALIDATION}")
         
-        print("Start auto_label_encoder")
+        if AUTO_LABEL_ENCODER:
+            print("Start auto_label_encoder")
         
-        # auto_label_encoderで自動的にラベルエンコーディングしないで欲しいcolumnはここに追加
-        exclude_columns = [
-            'id',
-            'date'
-        ]
-
-        self.train_df, self.valid_df, self.test_df = auto_label_encoder(
-            self.train_df,
-            self.valid_df, 
-            self.test_df,
-            exclude_columns
-        )
+            self.train_df, self.valid_df, self.test_df = auto_label_encoder(
+                self.train_df,
+                self.valid_df, 
+                self.test_df,
+                exclude_columns
+            )
 
         print("Finish")
         
@@ -214,16 +209,25 @@ class Base_Model(object):
         x_train, x_val = self.train_df[self.features], self.valid_df[self.features]
         y_train, y_val = self.train_df[self.target], self.valid_df[self.target]
         
+        if BINARY_CHANGE:
+            to_float32 =  x_train.select_dtypes("float").columns.tolist() 
+            x_train[to_float32] = x_train[to_float32].astype("float32")
+            x_val[to_float32] = x_val[to_float32].astype("float32")
+        
         train_set, val_set = self.convert_dataset(x_train, y_train, x_val, y_val)
         
+        print("Start fit")
         model = self.train_model(train_set, val_set)
+        print("Finish")
         
         # predict(to train,valid) 今の所意味なし
         conv_x_train = self.convert_x(x_train)
         conv_x_val = self.convert_x(x_val)
         
+        print("Start predict")
         train_pred = model.predict(conv_x_train).reshape(train_pred.shape)
         valid_pred = model.predict(conv_x_val).reshape(valid_pred.shape)
+        print("Finish")
         
         # predict(to test)
         x_test = self.convert_x(self.test_df[self.features])
@@ -249,7 +253,7 @@ class Base_Model(object):
             print("finish")
         
         #log
-        score_log = f'RMSSE score train : {train_score}, valid : {valid_score}'
+        score_log = f'RMSSE score train : {train_score}, {valid_score}'
         make_log(MAKE_PATH, PATH_W, score_log)
         print(score_log)
         logging.debug(score_log)

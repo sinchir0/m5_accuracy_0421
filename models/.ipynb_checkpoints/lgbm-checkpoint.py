@@ -13,18 +13,23 @@ class Lgb_Model(Base_Model):
         verbosity = 100 if self.verbose else 0
         return lgb.train(self.params, 
                          train_set, 
-                         valid_sets=[train_set, val_set], 
-                         verbose_eval=verbosity,
-                         callbacks=callbacks
+                         valid_sets = [train_set, val_set], 
+                         verbose_eval = verbosity,
+                         callbacks = callbacks,
                         )
         
     def convert_dataset(self, x_train, y_train, x_val, y_val):
-        if self.categoricals is not None:
+        if self.categoricals != []:
             train_set = lgb.Dataset(x_train, y_train, categorical_feature=self.categoricals)
             val_set = lgb.Dataset(x_val, y_val, categorical_feature=self.categoricals)
         else:
             train_set = lgb.Dataset(x_train, y_train)
             val_set = lgb.Dataset(x_val, y_val)
+
+        if BINARY_CHANGE:
+            train_set.save_binary(f'{MODEL_PASS}/{CASE}/{CASE}_{NOW:%Y%m%d%H%M%S}_train.bin')
+            train_set = lgb.Dataset(f'{MODEL_PASS}/{CASE}/{CASE}_{NOW:%Y%m%d%H%M%S}_train.bin')
+        
         return train_set, val_set
         
     def get_params(self):
@@ -48,7 +53,7 @@ class Lgb_Model(Base_Model):
         params = {
         'boosting_type': 'gbdt',
         'metric': 'rmse',
-        'objective': 'regression',
+        'objective': 'poisson',
         'n_jobs': -1,
         'seed': SEED,
         'learning_rate': 0.1,

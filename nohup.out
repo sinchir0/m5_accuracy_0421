@@ -132,3 +132,77 @@ Found `early_stopping_rounds` in params. Will use it instead of argument
 Finish case1! I kept you waiting !
 Quick submit command
 python submit_m5_acc.py sub_case1_20200329123501_valid_2.13198686411904.csv comment
+Start load_datasets_and_target
+Traceback (most recent call last):
+  File "run.py", line 16, in <module>
+    train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid = load_datasets_and_target(FEATURE,TARGET)
+  File "/home/jupyter/kaggle_pipeline_m5_accuracy/utils/__init__.py", line 43, in load_datasets_and_target
+    data_not_concat = pd.read_pickle(f"{DATA_PATH}/data.pkl")
+  File "/opt/conda/lib/python3.7/site-packages/pandas/io/pickle.py", line 170, in read_pickle
+    f, fh = get_handle(fp_or_buf, "rb", compression=compression, is_text=False)
+  File "/opt/conda/lib/python3.7/site-packages/pandas/io/common.py", line 434, in get_handle
+    f = open(path_or_buf, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/jupyter/kaggle_pipeline_m5_accuracy/data/input/data.pkl'
+[LightGBM] [Fatal] Cannot write binary data to /home/jupyter/kaggle_pipeline_m5_accuracy/model_output/case1/case1_20200404070646_train.bin 
+Start load_datasets_and_target
+Mem. usage decreased to 8702.56 Mb (46.1% reduction)
+Finish
+                                       id  item_id  dept_id  cat_id  store_id  ...  004_year  004_month  004_week 004_day  004_dayofweek
+0         HOUSEHOLD_1_514_WI_3_validation        0        0       0         0  ...      2011          1         4      29              5
+1         HOUSEHOLD_1_515_WI_3_validation        1        0       0         0  ...      2011          1         4      29              5
+2         HOUSEHOLD_1_516_WI_3_validation        2        0       0         0  ...      2011          1         4      29              5
+3         HOUSEHOLD_1_517_WI_3_validation        3        0       0         0  ...      2011          1         4      29              5
+4         HOUSEHOLD_1_518_WI_3_validation        4        0       0         0  ...      2011          1         4      29              5
+...                                   ...      ...      ...     ...       ...  ...       ...        ...       ...     ...            ...
+29973645      FOODS_3_823_WI_3_validation     1975        4       1         0  ...      2013         10        41       8              1
+29973646      FOODS_3_824_WI_3_validation     1976        4       1         0  ...      2013         10        41       8              1
+29973647      FOODS_3_825_WI_3_validation     1977        4       1         0  ...      2013         10        41       8              1
+29973648      FOODS_3_826_WI_3_validation     1978        4       1         0  ...      2013         10        41       8              1
+29973649      FOODS_3_827_WI_3_validation     1979        4       1         0  ...      2013         10        41       8              1
+
+[29973650 rows x 38 columns]
+                                     id  item_id  dept_id  cat_id  store_id  ...  004_year  004_month  004_week 004_day  004_dayofweek
+29973650  HOBBIES_1_001_CA_1_validation     1980        5       2         1  ...      2013         10        41       8              1
+29973651  HOBBIES_1_002_CA_1_validation     1981        5       2         1  ...      2013         10        41       8              1
+29973652  HOBBIES_1_003_CA_1_validation     1982        5       2         1  ...      2013         10        41       8              1
+29973653  HOBBIES_1_004_CA_1_validation     1983        5       2         1  ...      2013         10        41       8              1
+29973654  HOBBIES_1_005_CA_1_validation     1984        5       2         1  ...      2013         10        41       8              1
+...                                 ...      ...      ...     ...       ...  ...       ...        ...       ...     ...            ...
+30827365    FOODS_3_823_WI_3_validation     1975        4       1         0  ...      2013         11        45       5              1
+30827366    FOODS_3_824_WI_3_validation     1976        4       1         0  ...      2013         11        45       5              1
+30827367    FOODS_3_825_WI_3_validation     1977        4       1         0  ...      2013         11        45       5              1
+30827368    FOODS_3_826_WI_3_validation     1978        4       1         0  ...      2013         11        45       5              1
+30827369    FOODS_3_827_WI_3_validation     1979        4       1         0  ...      2013         11        45       5              1
+
+[853720 rows x 38 columns]
+                                     id  item_id  dept_id  cat_id  store_id  ...  004_year  004_month  004_week 004_day  004_dayofweek
+30827370  HOBBIES_1_001_CA_1_validation     1980        5       2         1  ...      2013         11        45       5              1
+30827371  HOBBIES_1_002_CA_1_validation     1981        5       2         1  ...      2013         11        45       5              1
+30827372  HOBBIES_1_003_CA_1_validation     1982        5       2         1  ...      2013         11        45       5              1
+30827373  HOBBIES_1_004_CA_1_validation     1983        5       2         1  ...      2013         11        45       5              1
+30827374  HOBBIES_1_005_CA_1_validation     1984        5       2         1  ...      2013         11        45       5              1
+...                                 ...      ...      ...     ...       ...  ...       ...        ...       ...     ...            ...
+31681085    FOODS_3_823_WI_3_validation     1975        4       1         0  ...      2013         12        49       3              1
+31681086    FOODS_3_824_WI_3_validation     1976        4       1         0  ...      2013         12        49       3              1
+31681087    FOODS_3_825_WI_3_validation     1977        4       1         0  ...      2013         12        49       3              1
+31681088    FOODS_3_826_WI_3_validation     1978        4       1         0  ...      2013         12        49       3              1
+31681089    FOODS_3_827_WI_3_validation     1979        4       1         0  ...      2013         12        49       3              1
+
+[853720 rows x 38 columns]
+Start lgb_model
+Start HOLD_OUT
+Finish
+Traceback (most recent call last):
+  File "run.py", line 42, in <module>
+    valid_df = valid_df
+  File "/home/jupyter/kaggle_pipeline_m5_accuracy/models/Base_Model.py", line 37, in __init__
+    self.y_pred, self.score, self.model = self.fit_hold()
+  File "/home/jupyter/kaggle_pipeline_m5_accuracy/models/Base_Model.py", line 217, in fit_hold
+    train_set, val_set = self.convert_dataset(x_train, y_train, x_val, y_val)
+  File "/home/jupyter/kaggle_pipeline_m5_accuracy/models/lgbm.py", line 30, in convert_dataset
+    train_set.save_binary(f'{MODEL_PASS}/{CASE}/{CASE}_{NOW:%Y%m%d%H%M%S}_train.bin')
+  File "/opt/conda/lib/python3.7/site-packages/lightgbm/basic.py", line 1164, in save_binary
+    c_str(filename)))
+  File "/opt/conda/lib/python3.7/site-packages/lightgbm/basic.py", line 45, in _safe_call
+    raise LightGBMError(decode_string(_LIB.LGBM_GetLastError()))
+lightgbm.basic.LightGBMError: Cannot write binary data to /home/jupyter/kaggle_pipeline_m5_accuracy/model_output/case1/case1_20200404070646_train.bin 

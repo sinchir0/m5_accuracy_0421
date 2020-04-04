@@ -101,7 +101,10 @@ def simple_fe(data):
     
     # to_pickle
     def series_to_df_to_pickle(df,fe_name):
-        pd.DataFrame(df[fe_name]).to_pickle(f'{FEATURES_PATH}/{fe_name}.pkl')
+        if USE_ALL_DATA:
+            pd.DataFrame(df[fe_name]).to_pickle(f'{FEATURES_PATH}/{fe_name}_all.pkl')
+        else:
+            pd.DataFrame(df[fe_name]).to_pickle(f'{FEATURES_PATH}/{fe_name}.pkl')
     
     for fe_name in to_pickle_fe_list:
         series_to_df_to_pickle(data,fe_name)

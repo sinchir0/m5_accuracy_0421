@@ -70,9 +70,8 @@ def load_datasets_and_target(feats,target_name):
     test_df = data[(data['date'] > '2016-04-24')]
     
     if OPE_CHECK:
-        train_df = train_df[1:1000], X_train = X_train[1:1000], y_train = y_train[1:1000]
-        valid_df = valid_df[1:1000], X_valid = X_valid[1:1000], y_valid = y_valid[1:1000]
-        #test_df = test_df[1:1000]
+        train_df = train_df[1:1000]; X_train = X_train[1:1000]; y_train = y_train[1:1000]
+        valid_df = valid_df[1:1000]; X_valid = X_valid[1:1000]; y_valid = y_valid[1:1000]
     
     del data
     gc.collect()

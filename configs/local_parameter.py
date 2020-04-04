@@ -1,9 +1,13 @@
 # CASE
-CASE = "case1"
+CASE = "case2"
 
 # 動作確認のみ
 #OPE_CHECK =True
 OPE_CHECK =False
+
+# TIME(元がGMTのため、日本時間に変換)
+import datetime
+NOW = datetime.datetime.now() + datetime.timedelta(hours=9)
 
 # PATH
 ROOT_PATH = "/home/jupyter/kaggle_pipeline_m5_accuracy"
@@ -13,11 +17,17 @@ MODEL_PASS = f"{ROOT_PATH}/model_output"
 SUB_PASS = f"{ROOT_PATH}/submission"
 
 MAKE_PATH = f"{MODEL_PASS}/{CASE}"
-PATH_W = f"{MODEL_PASS}/{CASE}/{CASE}_lgb_score.txt"
+PATH_W = f"{MODEL_PASS}/{CASE}/{CASE}_{NOW:%Y%m%d%H%M%S}_lgb_score.txt"
 
 # USE_ALL_DATA Including PrivateLBData 
-# USE_ALL_DATA = True
+#USE_ALL_DATA = True
 USE_ALL_DATA = False
+
+# Trick to avoid memory spike when LightGBM converts everything to float32:
+# See https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection/discussion/53773
+# 何故かやるとスコアが落ちる・・・
+#BINARY_CHANGE = True
+BINARY_CHANGE = False
 
 # SEED
 SEED = 2020
@@ -119,6 +129,3 @@ INF_TO_NAN = False
 #CALC_SHAP = True
 CALC_SHAP = False
 
-# TIME
-import datetime
-NOW = datetime.datetime.now()

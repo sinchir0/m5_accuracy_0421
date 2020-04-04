@@ -12,6 +12,11 @@ from utils import *
 
 seed_everything()
 
+# 一番最初に、今回のケースのディレクトリを作成する。
+if not os.path.exists(f'{MODEL_PASS}/{CASE}'):
+    os.mkdir(f'{MODEL_PASS}/{CASE}')
+    print(f'Make directory : {MODEL_PASS}/{CASE}')
+
 print("Start load_datasets_and_target")
 train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid = load_datasets_and_target(FEATURE,TARGET)
 print("Finish")
