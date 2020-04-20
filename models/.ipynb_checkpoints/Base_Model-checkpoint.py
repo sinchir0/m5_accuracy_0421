@@ -10,6 +10,7 @@ import shap
 from configs.local_parameter import *
 from logs.logger import *
 from utils import *
+from models.calc_rmsse import *
 
 class Base_Model(object):
     
@@ -77,100 +78,103 @@ class Base_Model(object):
     def calc_shap(self, x_train, model, shap_sampling = 10000):
         raise NotImplementedError
         
-    def calc_score(self, y_pred, y):
-        return np.sqrt(mean_squared_error(y_pred, y))
+    def calc_score(self, y, y_pred,TRAIN=False):
+        if EVALUATION == 'RMSE':
+            return np.sqrt(mean_squared_error(y_pred, y))
+        elif EVALUATION == 'RMSSE':
+            return wrmsse_for_score(y,y_pred,TRAIN)
     
-    def fit_cv(self):
-        print(f"Start {VALIDATION} {FOLD}_fold")
-        logging.debug(f"Start {VALIDATION} {FOLD}_fold")
+#     def fit_cv(self):
+#         print(f"Start {VALIDATION} {FOLD}_fold")
+#         logging.debug(f"Start {VALIDATION} {FOLD}_fold")
         
-        train_pred = np.zeros((len(self.train_df), ))
-        oof_pred = np.zeros((len(self.train_df), ))
-        y_pred = np.zeros((len(self.test_df), ))
-        models = []
+#         train_pred = np.zeros((len(self.train_df), ))
+#         oof_pred = np.zeros((len(self.train_df), ))
+#         y_pred = np.zeros((len(self.test_df), ))
+#         models = []
         
-        if OUTPUT_USE_DF:
-            self.output_use_df(self.train_df,self.test_df)
+#         if OUTPUT_USE_DF:
+#             self.output_use_df(self.train_df,self.test_df)
         
-        logging.debug(f"params:{self.params}")
+#         logging.debug(f"params:{self.params}")
         
-        for fold, (train_idx, val_idx) in enumerate(self.cv):
+#         for fold, (train_idx, val_idx) in enumerate(self.cv):
             
-            print('Fold:',fold)
-            print(f"train_idx:{train_idx}")
-            print(f"val_idx:{val_idx}")
-            logging.debug(f"Fold:{fold}")
+#             print('Fold:',fold)
+#             print(f"train_idx:{train_idx}")
+#             print(f"val_idx:{val_idx}")
+#             logging.debug(f"Fold:{fold}")
 
-            #train,fit
-            x_train, x_val = self.train_df[self.features].iloc[train_idx], self.train_df[self.features].iloc[val_idx]
-            y_train, y_val = self.train_df[self.target][train_idx], self.train_df[self.target][val_idx]
+#             #train,fit
+#             x_train, x_val = self.train_df[self.features].iloc[train_idx], self.train_df[self.features].iloc[val_idx]
+#             y_train, y_val = self.train_df[self.target][train_idx], self.train_df[self.target][val_idx]
             
-            train_set, val_set = self.convert_dataset(x_train, y_train, x_val, y_val)
+#             train_set, val_set = self.convert_dataset(x_train, y_train, x_val, y_val)
             
-            model = self.train_model(train_set, val_set)
+#             model = self.train_model(train_set, val_set)
             
-            #predict(to train,valid) 今の所意味なし
-            conv_x_train = self.convert_x(x_train)
-            conv_x_val = self.convert_x(x_val)
+#             #predict(to train,valid) 今の所意味なし
+#             conv_x_train = self.convert_x(x_train)
+#             conv_x_val = self.convert_x(x_val)
             
-            train_pred[train_idx] = model.predict(conv_x_train).reshape(train_pred[train_idx].shape)
-            oof_pred[val_idx] = model.predict(conv_x_val).reshape(oof_pred[val_idx].shape)
+#             train_pred[train_idx] = model.predict(conv_x_train).reshape(train_pred[train_idx].shape)
+#             oof_pred[val_idx] = model.predict(conv_x_val).reshape(oof_pred[val_idx].shape)
             
-            # predict(to test)
-            x_test = self.convert_x(self.test_df[self.features])
-            y_pred += model.predict(x_test).reshape(y_pred.shape) / self.n_splits
+#             # predict(to test)
+#             x_test = self.convert_x(self.test_df[self.features])
+#             y_pred += model.predict(x_test).reshape(y_pred.shape) / self.n_splits
             
-            #log
-            logging.debug(f'best_iteration:{model.best_iteration}')
-            train_score = f'train fold {fold} : {roc_auc_score(y_train, train_pred[train_idx])}'
-            make_log(MAKE_PATH, PATH_W, train_score)
-            logging.debug(train_score)
+#             #log
+#             logging.debug(f'best_iteration:{model.best_iteration}')
+#             train_score = f'train fold {fold} : {roc_auc_score(y_train, train_pred[train_idx])}'
+#             make_log(MAKE_PATH, PATH_W, train_score)
+#             logging.debug(train_score)
             
-            valid_score = f'valid fold {fold}: {roc_auc_score(y_val, oof_pred[val_idx])}'
-            make_log(MAKE_PATH, PATH_W, valid_score)
-            logging.debug(valid_score)
+#             valid_score = f'valid fold {fold}: {roc_auc_score(y_val, oof_pred[val_idx])}'
+#             make_log(MAKE_PATH, PATH_W, valid_score)
+#             logging.debug(valid_score)
             
-            models.append(model)
+#             models.append(model)
             
-            #特徴量重要度の算出
-            fold_importance = self.feature_importance(model,fold)
-            #fold_importance.rename(columns={'importance': fold},inplace=True)
-            if fold == 0:
-                feature_importances = fold_importance
-            else:
-                feature_importances = pd.merge(feature_importances,fold_importance,on='feature')
+#             #特徴量重要度の算出
+#             fold_importance = self.feature_importance(model,fold)
+#             #fold_importance.rename(columns={'importance': fold},inplace=True)
+#             if fold == 0:
+#                 feature_importances = fold_importance
+#             else:
+#                 feature_importances = pd.merge(feature_importances,fold_importance,on='feature')
                 
-            #SHAP値の計算 本当は画像をjpgで保存したい
-            if CALC_SHAP:
-                print("Start CALC_SHAP")
-                explainer, shap_values = self.calc_shap(x_train, model, 10000)
-                shap.summary_plot(shap_values[1], x_train)
-                print("Finish")
+#             #SHAP値の計算 本当は画像をjpgで保存したい
+#             if CALC_SHAP:
+#                 print("Start CALC_SHAP")
+#                 explainer, shap_values = self.calc_shap(x_train, model, 10000)
+#                 shap.summary_plot(shap_values[1], x_train)
+#                 print("Finish")
  
-        score = roc_auc_score(self.train_df[self.target], oof_pred)
+#         score = roc_auc_score(self.train_df[self.target], oof_pred)
     
-        #log
-        score_log = f'Oof auc score is: : {score}'
-        make_log(MAKE_PATH, PATH_W, score_log)
-        logging.debug(score_log)
+#         #log
+#         score_log = f'Oof auc score is: : {score}'
+#         make_log(MAKE_PATH, PATH_W, score_log)
+#         logging.debug(score_log)
         
-        #特徴量重要度の計算
-        feature_importances.set_index("feature",inplace=True)
-        feature_importances["mean"] = feature_importances.mean(axis='columns')
-        feature_importances.sort_values("mean",ascending=False,inplace=True)
-        print(feature_importances)
+#         #特徴量重要度の計算
+#         feature_importances.set_index("feature",inplace=True)
+#         feature_importances["mean"] = feature_importances.mean(axis='columns')
+#         feature_importances.sort_values("mean",ascending=False,inplace=True)
+#         print(feature_importances)
         
-        #特徴量重要度の保存
-        feature_importances.to_csv(f'{MODEL_PASS}/{CASE}/FTI_{CASE}_{NOW:%Y%m%d%H%M%S}_{score}.csv')
-        logging.debug(feature_importances)
+#         #特徴量重要度の保存
+#         feature_importances.to_csv(f'{MODEL_PASS}/{CASE}/FTI_{CASE}_{NOW:%Y%m%d%H%M%S}_{score}.csv')
+#         logging.debug(feature_importances)
         
-        #oof_predの保存
-        oof_pred_df = pd.DataFrame({
-            CASE :  oof_pred
-        })
-        oof_pred_df.to_pickle(f"{MODEL_PASS}/{CASE}/oof_pred_{CASE}_{NOW:%Y%m%d%H%M%S}_{score}.pkl")
+#         #oof_predの保存
+#         oof_pred_df = pd.DataFrame({
+#             CASE :  oof_pred
+#         })
+#         oof_pred_df.to_pickle(f"{MODEL_PASS}/{CASE}/oof_pred_{CASE}_{NOW:%Y%m%d%H%M%S}_{score}.pkl")
        
-        return y_pred, score, model, oof_pred, models
+#         return y_pred, score, model, oof_pred, models
     
     def fit_hold(self):
         print(f"Start {VALIDATION}")
@@ -235,12 +239,9 @@ class Base_Model(object):
         
         #log
         logging.debug(f'best_iteration:{model.best_iteration}')
-        train_score = f'train_{self.calc_score(y_train, train_pred)}'
-        make_log(MAKE_PATH, PATH_W, train_score)
-        logging.debug(train_score)
-
+        #train_score = f'train_{self.calc_score(y_train, train_pred,TRAIN=True)}'
+        #logging.debug(train_score)
         valid_score = f'valid_{self.calc_score(y_val, valid_pred)}'
-        make_log(MAKE_PATH, PATH_W, valid_score)
         logging.debug(valid_score)
 
         #models.append(model)
@@ -253,10 +254,10 @@ class Base_Model(object):
             print("finish")
         
         #log
-        score_log = f'RMSSE score train : {train_score}, {valid_score}'
-        make_log(MAKE_PATH, PATH_W, score_log)
-        print(score_log)
-        logging.debug(score_log)
+        #score_log = f'RMSSE score train : {train_score}, {valid_score}'
+        #make_log(MAKE_PATH, PATH_W, score_log)
+        #print(score_log)
+        #logging.debug(score_log)
         
         #特徴量重要度の計算
         feature_importances = self.feature_importance_hold(model)

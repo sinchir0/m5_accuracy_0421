@@ -1,7 +1,7 @@
 from models.Base_Model import *
 import lightgbm as lgb
 from logs.logger import log_evaluation
-
+from models.calc_rmsse import *
 
 class Lgb_Model(Base_Model):
     
@@ -16,6 +16,7 @@ class Lgb_Model(Base_Model):
                          valid_sets = [train_set, val_set], 
                          verbose_eval = verbosity,
                          callbacks = callbacks,
+                         feval= wrmsse_for_feval
                         )
         
     def convert_dataset(self, x_train, y_train, x_val, y_val):
@@ -53,6 +54,7 @@ class Lgb_Model(Base_Model):
         params = {
         'boosting_type': 'gbdt',
         'metric': 'rmse',
+        #'metric': None,
         'objective': 'poisson',
         'n_jobs': -1,
         'seed': SEED,
@@ -63,6 +65,9 @@ class Lgb_Model(Base_Model):
         'num_boost_round' : 2500, 
         'early_stopping_rounds' : 50
     }
+        
+        if OPE_CHECK:
+            params['num_boost_round'] = 1
         
         return params
     

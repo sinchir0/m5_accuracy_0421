@@ -12,27 +12,37 @@ from utils import *
 
 seed_everything()
 
+print(f"Start {CASE}")
+
+if OPE_CHECK:
+    print("OPE_CHECK True")    
+    
 # 一番最初に、今回のケースのディレクトリを作成する。
 if not os.path.exists(f'{MODEL_PASS}/{CASE}'):
     os.mkdir(f'{MODEL_PASS}/{CASE}')
     print(f'Make directory : {MODEL_PASS}/{CASE}')
 
-print("Start load_datasets_and_target")
-train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid = load_datasets_and_target(FEATURE,TARGET)
-print("Finish")
-
 #loggngの設定
-os.makedirs(f"./logs/{CASE}",exist_ok=True)
+os.makedirs(f"./{MAKE_PATH}",exist_ok=True)
 #メインの設定
 logging.basicConfig(
-    filename=f'./logs/{CASE}/log_{CASE}_{NOW:%Y%m%d%H%M%S}.log', level=logging.DEBUG
+    filename=f'{MAKE_PATH}/log_{CASE}_{NOW:%Y%m%d%H%M%S}.log', level=logging.DEBUG
 )
+print("start make log")
 #一行目
-logging.debug(f'./logs/log_{CASE}_{NOW:%Y%m%d%H%M%S}.log')
-#その他、出力したいログ群
+logging.debug(f'{MAKE_PATH}/log_{CASE}_{NOW:%Y%m%d%H%M%S}.log')
+
+# モデルの読み込み
+print("Start load_datasets_and_target")
+#train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid = load_datasets_and_target(FEATURE,TARGET)
+train_df,valid_df,test_df = load_datasets_and_target(FEATURE,TARGET)
+print("Finish")
+
+# その他、出力したいログ群
 logging.debug(f"feats:{FEATURE}")
 logging.debug(f"target:{TARGET}")
 logging.debug(f"train_df.shape:{train_df.shape}")
+logging.debug(f"train_df.shape:{valid_df.shape}")
 logging.debug(f"test_df.shape:{test_df.shape}")
 
 logger = logging.getLogger('main')

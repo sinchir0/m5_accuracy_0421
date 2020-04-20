@@ -60,23 +60,24 @@ def load_datasets_and_target(feats,target_name):
     
     # train,testへの分割
     train_df = data[data['date'] <= '2016-03-27']
-    X_train = train_df.drop(TARGET, axis = 1)
-    y_train = train_df[TARGET]
+    #X_train = train_df.drop(TARGET, axis = 1)
+    #y_train = train_df[TARGET]
     
     valid_df = data[(data['date'] > '2016-03-27') & (data['date'] <= '2016-04-24')]
-    X_valid = valid_df.drop(TARGET, axis = 1)
-    y_valid = valid_df[TARGET]
+    #X_valid = valid_df.drop(TARGET, axis = 1)
+    #y_valid = valid_df[TARGET]
     
     test_df = data[(data['date'] > '2016-04-24')]
     
-    if OPE_CHECK:
-        train_df = train_df[1:1000]; X_train = X_train[1:1000]; y_train = y_train[1:1000]
-        valid_df = valid_df[1:1000]; X_valid = X_valid[1:1000]; y_valid = y_valid[1:1000]
+#     if OPE_CHECK:
+#         train_df = train_df[1:1000]; X_train = X_train[1:1000]; y_train = y_train[1:1000]
+#         valid_df = valid_df[1:1000]; X_valid = X_valid[1:1000]; y_valid = y_valid[1:1000]
     
     del data
     gc.collect()
     
-    return train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid
+    #return train_df,valid_df,test_df,X_train,y_train,X_valid,y_valid
+    return train_df,valid_df,test_df
 
 #def seed_everything(seed=71):
 def seed_everything(seed=SEED):

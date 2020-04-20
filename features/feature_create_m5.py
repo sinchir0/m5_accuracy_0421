@@ -41,7 +41,7 @@ def simple_fe(data):
     data['001_lag_t30'] = data.groupby(['id'])['demand'].transform(lambda x: x.shift(30))  
     
     #### rolling demand features
-    # 7点について、meanだったり、stdだったりを取る。
+    # 28点前のdemandについて、7点について、meanだったり、stdだったりを取る。
     data['002_rolling_mean_t7'] = data.groupby(['id'])['demand'].transform(lambda x: x.shift(28).rolling(7).mean())    
     data['002_rolling_std_t7'] = data.groupby(['id'])['demand'].transform(lambda x: x.shift(28).rolling(7).std())
     data['002_rolling_mean_t30'] = data.groupby(['id'])['demand'].transform(lambda x: x.shift(28).rolling(30).mean())

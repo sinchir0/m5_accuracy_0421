@@ -1,39 +1,40 @@
-# CASE
-CASE = "case2"
+### CASE
+CASE = "case4"
 
-# 動作確認のみ
-#OPE_CHECK =True
-OPE_CHECK =False
+### 動作確認のみ
+OPE_CHECK =True
+#OPE_CHECK =False
 
-# TIME(元がGMTのため、日本時間に変換)
+### TIME(元がGMTのため、日本時間に変換)
 import datetime
 NOW = datetime.datetime.now() + datetime.timedelta(hours=9)
 
-# PATH
-ROOT_PATH = "/home/jupyter/kaggle_pipeline_m5_accuracy"
+### PATH
+ROOT_PATH = "/datadrive/workspace/s-saito/kaggle_pipeline_m5_accuracy"
 DATA_PATH = f"{ROOT_PATH}/data/input"
 FEATURES_PATH = f"{ROOT_PATH}/features"
 MODEL_PASS = f"{ROOT_PATH}/model_output"
 SUB_PASS = f"{ROOT_PATH}/submission"
+WEIGHT_PASS = f"{ROOT_PATH}/models/weight"
 
+# log path
 MAKE_PATH = f"{MODEL_PASS}/{CASE}"
-PATH_W = f"{MODEL_PASS}/{CASE}/{CASE}_{NOW:%Y%m%d%H%M%S}_lgb_score.txt"
 
-# USE_ALL_DATA Including PrivateLBData 
+### USE_ALL_DATA Including PrivateLBData 
 #USE_ALL_DATA = True
 USE_ALL_DATA = False
 
-# Trick to avoid memory spike when LightGBM converts everything to float32:
+### Trick to avoid memory spike when LightGBM converts everything to float32:
 # See https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection/discussion/53773
 # 何故かやるとスコアが落ちる・・・
 #BINARY_CHANGE = True
 BINARY_CHANGE = False
 
-# SEED
+### SEED
 SEED = 2020
 #SEED = 71
 
-# USE FEATURE
+### USE FEATURE
 FEATURE = [
     '001_lag_t28',
     '001_lag_t29',
@@ -91,17 +92,21 @@ TO_PICKLE_TARGET = [
 # TARGET
 TARGET = 'demand'
 
-# VALIDATION
+# VALIDATION METHOD
 VALIDATION = 'HOLD_OUT'
+
+### EVALUATION VALUE
+#EVALUATION = 'RMSE'
+EVALUATION = 'RMSSE'
 
 # Only use group k-fold
 # GROUPS = 
 GROUPS = False
 
 FOLD = 4
-METRIC = "auc"
+#METRIC = "auc"
 LOSS = "multi_logloss"
-ID_NAME = "PassengerId"
+#ID_NAME = "PassengerId"
 
 # label_encoderでラベルエンコーディングしないで欲しいcolumnはここに追加
 EXCLUDE_COLUMNS = [
