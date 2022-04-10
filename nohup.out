@@ -1,4 +1,0 @@
-  File "run.py", line 19
-    if not os.path.exists(f'{MODEL_PASS}/{CASE}'):
-                                               ^
-SyntaxError: invalid syntax
